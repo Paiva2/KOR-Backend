@@ -13,7 +13,7 @@ export default class ClientModel implements ClientRepository {
       [dto.name, dto.cnpj]
     );
 
-    return this.formatUserModel(rows[0]);
+    return this.formatUserSchema(rows[0]);
   }
 
   public async findByCnpj(dto: string): Promise<IClient | null> {
@@ -24,7 +24,7 @@ export default class ClientModel implements ClientRepository {
 
     if (!rows.length) return null;
 
-    return this.formatUserModel(rows[0]);
+    return this.formatUserSchema(rows[0]);
   }
 
   public async findById(dto: string): Promise<IClient | null> {
@@ -35,10 +35,10 @@ export default class ClientModel implements ClientRepository {
 
     if (!rows.length) return null;
 
-    return this.formatUserModel(rows[0]);
+    return this.formatUserSchema(rows[0]);
   }
 
-  private formatUserModel(dto: IClientModel): IClient {
+  private formatUserSchema(dto: IClientModel): IClient {
     return {
       id: dto.id,
       fullName: dto.full_name,
