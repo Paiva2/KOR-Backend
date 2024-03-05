@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    container_name: postgres
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=development
+      - POSTGRES_PASSWORD=development123
+      - POSTGRES_DB=kor-test
