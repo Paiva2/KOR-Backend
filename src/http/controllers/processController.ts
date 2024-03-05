@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import ProcessFactory from "./factories/processFactory";
+import JwtService from "../services/jwt/jwtService";
 
 export default class ProcessController {
+  private jwtService = new JwtService();
+
   public constructor() {}
 
   public newProcess = async (req: Request, res: Response) => {
@@ -11,10 +14,11 @@ export default class ProcessController {
 
     const { createNewProcessService } = await factory.exec();
 
-    const newProcess = await createNewProcessService.exec(
-      "56415bc9-7b04-4d26-b534-82fab4507937",
-      dto
+    const parseToken = this.jwtService.decode(
+      req.headers.authorization!.replace("Bearer ", "")
     );
+
+    const newProcess = await createNewProcessService.exec(parseToken!, dto);
 
     return res.status(201).send({
       message: "Processo criado com sucesso.",

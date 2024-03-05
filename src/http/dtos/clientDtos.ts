@@ -7,3 +7,7 @@ export const clientRegisterDTO = z.object({
   cnpj: z.string().regex(cnpjRegex, { message: "invalid CNPJ format." }),
   name: z.string().min(3, { message: "name must have at least 3 characters." }),
 });
+
+export const clientAuthDTO = z.object({
+  cnpj: z.string().regex(cnpjRegex, { message: "invalid CNPJ format." }),
+});
