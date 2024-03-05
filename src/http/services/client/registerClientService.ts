@@ -1,11 +1,10 @@
-import { IClient } from "../../@types/client";
-import BadRequestException from "../../exceptions/badRequestException";
+import type { IClient } from "../../@types/client";
 import ConflictException from "../../exceptions/conflictEsception";
 import ClientRepository from "../../repositories/clientRepository";
-import DtoCheck from "./dtoCheck";
+import ClientDtoCheck from "./clientDtoCheck";
 
 export default class RegisterClientService {
-  private dtoCheck = new DtoCheck();
+  private dtoCheck = new ClientDtoCheck();
 
   public constructor(private readonly clientRepository: ClientRepository) {}
 

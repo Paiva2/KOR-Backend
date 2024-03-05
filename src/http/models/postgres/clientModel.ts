@@ -3,7 +3,7 @@ import ClientRepository from "../../repositories/clientRepository";
 import pool from "../../lib/pg";
 
 export default class ClientModel implements ClientRepository {
-  async save(dto: IClientSave): Promise<IClient> {
+  public async save(dto: IClientSave): Promise<IClient> {
     const { rows } = await pool.query(
       `
     INSERT INTO tb_clients (full_name, cnpj)
@@ -16,9 +16,20 @@ export default class ClientModel implements ClientRepository {
     return this.formatUserModel(rows[0]);
   }
 
-  async findByCnpj(dto: string): Promise<IClient | null> {
+  public async findByCnpj(dto: string): Promise<IClient | null> {
     const { rows } = await pool.query(
       "SELECT * FROM tb_clients WHERE cnpj = $1",
+      [dto]
+    );
+
+    if (!rows.length) return null;
+
+    return this.formatUserModel(rows[0]);
+  }
+
+  public async findById(dto: string): Promise<IClient | null> {
+    const { rows } = await pool.query(
+      "SELECT * FROM tb_clients WHERE id = $1",
       [dto]
     );
 

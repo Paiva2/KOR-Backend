@@ -29,7 +29,7 @@ export default async function dbInit() {
     
             CREATE TABLE IF NOT EXISTS tb_process (
                 id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-                number INTEGER NOT NULL UNIQUE,
+                number VARCHAR(200) NOT NULL UNIQUE,
                 cause_value VARCHAR(100),
                 type PROCESS_TYPE,
                 quote_date TIMESTAMP NOT NULL,

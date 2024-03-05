@@ -1,7 +1,7 @@
 import BadRequestException from "../../exceptions/badRequestException";
 import cnpjValidator from "../../utils/cnpjValidator";
 
-export default class DtoCheck {
+export default class ClientDtoCheck {
   public constructor() {}
 
   public registerClientDto(dto: { name: string; cnpj: string }) {

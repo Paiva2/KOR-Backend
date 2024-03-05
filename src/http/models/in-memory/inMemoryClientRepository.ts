@@ -5,7 +5,7 @@ import ClientRepository from "../../repositories/clientRepository";
 export default class InMemoryClientRepository implements ClientRepository {
   public clients: IClient[] = [];
 
-  async save(dto: IClientSave): Promise<IClient> {
+  public async save(dto: IClientSave): Promise<IClient> {
     const newClient: IClient = {
       id: randomUUID(),
       cnpj: dto.cnpj,
@@ -20,7 +20,11 @@ export default class InMemoryClientRepository implements ClientRepository {
     return newClient;
   }
 
-  async findByCnpj(dto: string): Promise<IClient | null> {
+  public async findByCnpj(dto: string): Promise<IClient | null> {
     return this.clients.find((client) => client.cnpj === dto) ?? null;
+  }
+
+  public async findById(dto: string): Promise<IClient | null> {
+    return this.clients.find((client) => client.id === dto) ?? null;
   }
 }
