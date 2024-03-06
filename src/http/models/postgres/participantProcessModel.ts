@@ -89,12 +89,12 @@ export default class ParticipantProcessModel
     return {
       id: dto.id,
       participantId: dto.participant_id,
-      processId: dto.participant_id,
+      processId: dto.process_id,
       createdAt: dto.created_at,
       deletedAt: dto.deleted_at,
       updatedAt: dto.updated_at,
       participant: {
-        id: dto.id,
+        id: dto.participant_id,
         document: dto.participant_document,
         email: dto.participant_email,
         name: dto.participant_full_name,
