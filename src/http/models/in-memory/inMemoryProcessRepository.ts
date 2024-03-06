@@ -107,4 +107,86 @@ export default class InMemoryProcessRepository implements ProcessRepository {
 
     return deletedProcess;
   }
+
+  private async handleParticipantQuery(participantId: string) {
+    const listOfProcess: IProcess[] = [];
+
+    const participantsWithQueryId =
+      await this.participantProcessRepository.findAllProcessParticipantsById(
+        participantId
+      );
+
+    for await (let pp of participantsWithQueryId) {
+      const findProcess = this.process.find(
+        (process) => process.id === pp.processId
+      );
+
+      if (findProcess) {
+        const findParticipantsFromProcess =
+          await this.participantProcessRepository.findAllByProcessId(
+            findProcess.id
+          );
+
+        findProcess.participantProcess = findParticipantsFromProcess;
+
+        listOfProcess.push(findProcess);
+      }
+    }
+
+    return listOfProcess;
+  }
+
+  public async listAll(query: {
+    client?: string | undefined;
+    participant?: string | undefined;
+    page: string;
+    perPage: string;
+  }): Promise<{ page: number; perPage: number; list: IProcess[] }> {
+    let list = [] as IProcess[];
+
+    if (!query.client && !query.participant) {
+      for await (let process of this.process) {
+        const getProcess = await this.findById(process.id);
+
+        if (getProcess) {
+          list.push(getProcess);
+        }
+      }
+    }
+
+    if (query.client && query.participant) {
+      const listWithClients = this.process.filter(
+        (process) => process.clientId === query.client
+      );
+
+      const listWithParticipants = await this.handleParticipantQuery(
+        query.participant
+      );
+
+      list = [...new Set(listWithClients.concat(listWithParticipants))];
+    } else if (query.client) {
+      const listOfProcessWithClient = this.process.filter(
+        (process) => process.clientId === query.client
+      );
+
+      for await (let process of listOfProcessWithClient) {
+        const getProcess = await this.findById(process.id);
+
+        if (getProcess) {
+          list.push(getProcess);
+        }
+      }
+    } else if (query.participant) {
+      list = await this.handleParticipantQuery(query.participant);
+    }
+
+    const page = +query.page;
+    const perPage = +query.perPage;
+
+    return {
+      page,
+      perPage,
+      list: list.slice((page - 1) * perPage, perPage * page),
+    };
+  }
 }

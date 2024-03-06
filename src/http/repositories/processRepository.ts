@@ -7,6 +7,17 @@ export default interface ProcessRepository {
 
   findById(dto: string): Promise<IProcess | null>;
 
+  listAll(query: {
+    client?: string;
+    participant?: string;
+    page: string;
+    perPage: string;
+  }): Promise<{
+    page: number;
+    perPage: number;
+    list: IProcess[];
+  }>;
+
   updateProcess(processId: string, dto: IProcessUpdate): Promise<IProcess>;
 
   delete(dto: string): Promise<IProcess>;

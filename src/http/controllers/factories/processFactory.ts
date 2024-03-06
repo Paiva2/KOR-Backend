@@ -3,6 +3,7 @@ import ProcessModel from "../../models/postgres/processModel";
 import CreateNewProcessService from "../../services/process/createNewProcessService";
 import DeleteProcessService from "../../services/process/deleteProcessService";
 import FilterProcessByIdService from "../../services/process/filterProcessByIdService";
+import FilterProcessByParamsService from "../../services/process/filterProcessByParamsService";
 import UpdateProcessInfosService from "../../services/process/updateProcessInfosService";
 
 export default class ProcessFactory {
@@ -28,11 +29,16 @@ export default class ProcessFactory {
       models.processModel
     );
 
+    const filterProcessByParams = new FilterProcessByParamsService(
+      models.processModel
+    );
+
     return {
       createNewProcessService,
       filterProcessById,
       updateProcessInfosService,
       deleteProcessService,
+      filterProcessByParams,
     };
   }
 

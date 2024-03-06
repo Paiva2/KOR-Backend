@@ -26,4 +26,6 @@ export default function processRoutes(app: Express) {
     [tokenHandler],
     processController.deleteProcessById
   );
+
+  app.get("/processos", processController.listAllProcess);
 }

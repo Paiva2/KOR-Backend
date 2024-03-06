@@ -4,6 +4,8 @@ import {
   IProcess,
   IProcessModel,
   IProcessUpdate,
+  IProcessClientAndParticipantModel,
+  IProcessClientAndParticipant,
 } from "../../@types/process";
 import pool from "../../lib/pg";
 import ProcessRepository from "../../repositories/processRepository";
@@ -141,6 +143,232 @@ export default class ProcessModel implements ProcessRepository {
     );
 
     return this.formatProcessSchemaSingle(rows[0]);
+  }
+
+  private async filterAllByClientAndParticipant(
+    clientId: string,
+    participantId: string,
+    page: number,
+    perPage: number
+  ): Promise<IProcessClientAndParticipantModel[]> {
+    const { rows } = await pool.query(
+      `
+      SELECT 
+      pcs.*,
+      cc.id as client_id,
+      cc.full_name as client_name,
+      cc.cnpj as client_cnpj,
+      cc.created_at as client_created_at,
+      cc.updated_at as client_updated_at,
+      cc.deleted_at as client_deleted_at,
+      pt.id as participant_id,
+      pt.full_name as participant_full_name,
+      pt.email as participant_email,        
+      pt.phone as participant_phone,
+      pt."document" as participant_document,
+      pt."type" as participant_type,
+      pt.created_at as participant_created_at,
+      pt.updated_at as participant_updated_at,
+      pt.deleted_at as participant_deleted_at
+    FROM tb_process pcs
+    INNER JOIN tb_clients cc ON cc.id = pcs.client_id
+    INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
+    INNER JOIN tb_participants pt ON pt.id = pp.participant_id
+    WHERE pcs.client_id = $1 AND pp.participant_id = $2
+    ORDER BY created_at DESC
+    LIMIT $3 OFFSET ($4 - 1) * $3
+`,
+      [clientId, participantId, perPage, page]
+    );
+
+    return rows;
+  }
+
+  private async filterAllByParticipantId(
+    participantId: string,
+    page: number,
+    perPage: number
+  ) {
+    const { rows } = await pool.query(
+      `
+      SELECT 
+      pcs.*,
+      cc.id as client_id,
+      cc.full_name as client_name,
+      cc.cnpj as client_cnpj,
+      cc.created_at as client_created_at,
+      cc.updated_at as client_updated_at,
+      cc.deleted_at as client_deleted_at,
+      pt.id as participant_id,
+      pt.full_name as participant_full_name,
+      pt.email as participant_email,        
+      pt.phone as participant_phone,
+      pt."document" as participant_document,
+      pt."type" as participant_type,
+      pt.created_at as participant_created_at,
+      pt.updated_at as participant_updated_at,
+      pt.deleted_at as participant_deleted_at
+    FROM tb_process pcs
+    INNER JOIN tb_clients cc ON cc.id = pcs.client_id
+    INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
+    INNER JOIN tb_participants pt ON pt.id = pp.participant_id
+    WHERE pp.participant_id = $1
+    ORDER BY created_at DESC
+    LIMIT $2 OFFSET ($3 - 1) * $2
+  `,
+      [participantId, perPage, page]
+    );
+
+    return rows;
+  }
+
+  private async filterAllByClientId(
+    clientId: string,
+    page: number,
+    perPage: number
+  ) {
+    const { rows } = await pool.query(
+      `
+      SELECT 
+      pcs.*,
+      cc.id as client_id,
+      cc.full_name as client_name,
+      cc.cnpj as client_cnpj,
+      cc.created_at as client_created_at,
+      cc.updated_at as client_updated_at,
+      cc.deleted_at as client_deleted_at,
+      pt.id as participant_id,
+      pt.full_name as participant_full_name,
+      pt.email as participant_email,        
+      pt.phone as participant_phone,
+      pt."document" as participant_document,
+      pt."type" as participant_type,
+      pt.created_at as participant_created_at,
+      pt.updated_at as participant_updated_at,
+      pt.deleted_at as participant_deleted_at
+    FROM tb_process pcs
+    INNER JOIN tb_clients cc ON cc.id = pcs.client_id
+    INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
+    INNER JOIN tb_participants pt ON pt.id = pp.participant_id
+    WHERE pcs.client_id = $1
+    ORDER BY created_at DESC
+    LIMIT $3 OFFSET ($3 - 1) * $2
+  `,
+      [clientId, perPage, page]
+    );
+
+    return rows;
+  }
+
+  private async filterAllProcess(page: number, perPage: number) {
+    const { rows } = await pool.query(
+      `
+      SELECT 
+      pcs.*,
+      cc.id as client_id,
+      cc.full_name as client_name,
+      cc.cnpj as client_cnpj,
+      cc.created_at as client_created_at,
+      cc.updated_at as client_updated_at,
+      cc.deleted_at as client_deleted_at,
+      pt.id as participant_id,
+      pt.full_name as participant_full_name,
+      pt.email as participant_email,        
+      pt.phone as participant_phone,
+      pt."document" as participant_document,
+      pt."type" as participant_type,
+      pt.created_at as participant_created_at,
+      pt.updated_at as participant_updated_at,
+      pt.deleted_at as participant_deleted_at
+    FROM tb_process pcs
+    INNER JOIN tb_clients cc ON cc.id = pcs.client_id
+    INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
+    INNER JOIN tb_participants pt ON pt.id = pp.participant_id
+    ORDER BY created_at DESC
+    LIMIT $1 OFFSET ($2 - 1) * $1
+  `,
+      [perPage, page]
+    );
+
+    return rows;
+  }
+
+  async listAll(query: {
+    client?: string | undefined;
+    participant?: string | undefined;
+    page: string;
+    perPage: string;
+  }): Promise<{ page: number; perPage: number; list: IProcess[] }> {
+    let list: IProcessClientAndParticipantModel[] = [];
+
+    const page = +query.page;
+    const perPage = +query.perPage;
+
+    if (!query.client && !query.participant) {
+      list = await this.filterAllProcess(page, perPage);
+    }
+
+    if (query.participant && query.client) {
+      list = await this.filterAllByClientAndParticipant(
+        query.client,
+        query.participant,
+        page,
+        perPage
+      );
+    } else if (query.participant) {
+      list = await this.filterAllByParticipantId(
+        query.participant,
+        page,
+        perPage
+      );
+    } else if (query.client) {
+      list = await this.filterAllByClientId(query.client, page, perPage);
+    }
+
+    return {
+      page: page,
+      perPage: perPage,
+      list: list.map((process) => this.formatListAll(process)),
+    };
+  }
+
+  private formatListAll(
+    dto: IProcessClientAndParticipantModel
+  ): IProcessClientAndParticipant {
+    return {
+      id: dto.id,
+      audienceDate: dto.audience_date,
+      causeValue: dto.cause_value,
+      city: dto.city,
+      forum: dto.forum,
+      number: dto.number,
+      quoteDate: dto.quote_date,
+      state: dto.state,
+      type: dto.type,
+      clientId: dto.client_id,
+      createdAt: dto.created_at,
+      updatedAt: dto.updated_at,
+      deletedAt: dto.deleted_at,
+      client: {
+        id: dto.client_id,
+        cnpj: dto.client_cnpj,
+        name: dto.client_name,
+        createdAt: dto.client_created_at,
+        updatedAt: dto.client_updated_at,
+        deletedAt: dto.client_deleted_at,
+      },
+      participant: {
+        id: dto.participant_id,
+        document: dto.participant_document,
+        email: dto.participant_email,
+        name: dto.participant_full_name,
+        phone: dto.participant_phone,
+        type: dto.participant_type,
+        createdAt: dto.participant_created_at,
+        deletedAt: dto.participant_deleted_at,
+        updatedAt: dto.participant_updated_at,
+      },
+    };
   }
 
   private formatParticipantProcessSchema(pp: IParticipantProcessModel) {

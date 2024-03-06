@@ -78,4 +78,23 @@ export default class ProcessController {
       message: "Processo deletado com sucesso.",
     });
   };
+
+  public listAllProcess = async (req: Request, res: Response) => {
+    const queries = req.query as {
+      page: string;
+      perPage: string;
+      cliente?: string;
+      participante?: string;
+    };
+
+    const { filterProcessByParams } = await this.factory.exec();
+
+    const getProcessList = await filterProcessByParams.exec({
+      ...queries,
+      participant: queries.participante,
+      client: queries.cliente,
+    });
+
+    return res.status(200).send(getProcessList);
+  };
 }

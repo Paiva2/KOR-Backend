@@ -66,4 +66,26 @@ export default class InMemoryParticipantProcessRepository
 
     return findParticipantsProcess;
   }
+
+  public async findAllProcessParticipantsById(
+    participantId: string
+  ): Promise<IParticipantProcess[]> {
+    let findParticipantProcess = this.participantsProcess.filter(
+      (participant) => participant.participantId === participantId
+    );
+
+    findParticipantProcess = findParticipantProcess.map((pp) => {
+      const findParticipant = this.participantRepository?.participants.find(
+        (participant) => participant.id === pp.participantId
+      );
+
+      if (findParticipant) {
+        pp.participant = findParticipant;
+      }
+
+      return pp;
+    });
+
+    return findParticipantProcess;
+  }
 }
