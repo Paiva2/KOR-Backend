@@ -196,6 +196,10 @@ export default class ProcessModel implements ProcessRepository {
   ) {
     const { rows } = await pool.query(
       `
+      WITH get_participant_processess AS (
+        SELECT process_id FROM tb_process_participants WHERE participant_id = $1
+      )
+
       SELECT 
       pcs.*,
       cc.id as client_id,
@@ -217,7 +221,7 @@ export default class ProcessModel implements ProcessRepository {
     INNER JOIN tb_clients cc ON cc.id = pcs.client_id
     INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
     INNER JOIN tb_participants pt ON pt.id = pp.participant_id
-    WHERE pp.participant_id = $1
+    WHERE pcs.id IN (SELECT * FROM get_participant_processess)
     ORDER BY created_at DESC
     LIMIT $2 OFFSET ($3 - 1) * $2
   `,

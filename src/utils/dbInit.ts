@@ -37,7 +37,7 @@ export default async function dbInit() {
                 forum VARCHAR(100) NOT NULL,
                 city VARCHAR(50) NOT NULL,
                 state VARCHAR(50) NOT NULL,
-                client_id UUID NOT NULL REFERENCES tb_clients(id) ON DELETE SET NULL,
+                client_id UUID NOT NULL REFERENCES tb_clients(id) ON DELETE CASCADE,
                 created_at TIMESTAMP NOT NULL DEFAULT now(), 
                 updated_at TIMESTAMP NOT NULL DEFAULT now(),
                 deleted_at TIMESTAMP DEFAULT NULL
@@ -57,8 +57,8 @@ export default async function dbInit() {
     
             CREATE TABLE IF NOT EXISTS tb_process_participants (
                 id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-                process_id UUID NOT NULL REFERENCES tb_process(id) ON DELETE SET NULL,
-                participant_id UUID NOT NULL REFERENCES tb_participants(id) ON DELETE SET NULL,
+                process_id UUID NOT NULL REFERENCES tb_process(id) ON DELETE CASCADE,
+                participant_id UUID NOT NULL REFERENCES tb_participants(id) ON DELETE CASCADE,
                 created_at TIMESTAMP NOT NULL DEFAULT now(), 
                 updated_at TIMESTAMP NOT NULL DEFAULT now(),
                 deleted_at TIMESTAMP DEFAULT NULL

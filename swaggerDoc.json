@@ -92,7 +92,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
+                  "cnpj": {
                     "description": "CNPJ do cliente",
                     "type": "string",
                     "example": "33.483.364/0001-26"
@@ -135,58 +135,53 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "fields": {
-                    "type": "object",
-                    "properties": {
-                      "number": {
-                        "description": "Número do processo",
-                        "type": "string",
-                        "example": "1234567",
-                        "required": true
-                      },
-                      "causeValue": {
-                        "description": "Valor da causa",
-                        "type": "string",
-                        "example": "R$ 500",
-                        "required": true
-                      },
-                      "type": {
-                        "description": "Tipo do processo",
-                        "type": "string",
-                        "example": "administrative",
-                        "required": true
-                      },
-                      "quoteDate": {
-                        "description": "Data da citação",
-                        "type": "string",
-                        "example": "2024-02-05T20:51:52.926Z",
-                        "required": true
-                      },
-                      "audienceDate": {
-                        "description": "Data da audiência",
-                        "type": "string",
-                        "example": "2024-03-25T20:51:52.926Z",
-                        "required": true
-                      },
-                      "forum": {
-                        "description": "Forum do processo",
-                        "type": "string",
-                        "example": "Forum X",
-                        "required": true
-                      },
-                      "city": {
-                        "description": "Cidade do processo",
-                        "type": "string",
-                        "example": "Salvador",
-                        "required": true
-                      },
-                      "state": {
-                        "description": "Estado do processo",
-                        "type": "string",
-                        "example": "BA",
-                        "required": true
-                      }
-                    }
+                  "number": {
+                    "description": "Número do processo",
+                    "type": "string",
+                    "example": "1234567",
+                    "required": true
+                  },
+                  "causeValue": {
+                    "description": "Valor da causa",
+                    "type": "string",
+                    "example": "R$ 500",
+                    "required": true
+                  },
+                  "type": {
+                    "description": "Tipo do processo",
+                    "type": "string",
+                    "example": "administrative",
+                    "required": true
+                  },
+                  "quoteDate": {
+                    "description": "Data da citação",
+                    "type": "string",
+                    "example": "2024-02-05T20:51:52.926Z",
+                    "required": true
+                  },
+                  "audienceDate": {
+                    "description": "Data da audiência",
+                    "type": "string",
+                    "example": "2024-03-25T20:51:52.926Z",
+                    "required": true
+                  },
+                  "forum": {
+                    "description": "Forum do processo",
+                    "type": "string",
+                    "example": "Forum X",
+                    "required": true
+                  },
+                  "city": {
+                    "description": "Cidade do processo",
+                    "type": "string",
+                    "example": "Salvador",
+                    "required": true
+                  },
+                  "state": {
+                    "description": "Estado do processo",
+                    "type": "string",
+                    "example": "BA",
+                    "required": true
                   }
                 }
               }
@@ -194,6 +189,7 @@
           },
           "required": true
         },
+
         "responses": {
           "201": {
             "description": "Processo criado com sucesso."
@@ -345,7 +341,7 @@
     },
 
     "/novo-participante": {
-      "get": {
+      "post": {
         "tags": ["Participante"],
         "summary": "Register a new participant on system.",
         "requestBody": {
