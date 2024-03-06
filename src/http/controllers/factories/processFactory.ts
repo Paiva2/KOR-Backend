@@ -2,6 +2,7 @@ import ClientModel from "../../models/postgres/clientModel";
 import ProcessModel from "../../models/postgres/processModel";
 import CreateNewProcessService from "../../services/process/createNewProcessService";
 import FilterProcessByIdService from "../../services/process/filterProcessByIdService";
+import UpdateProcessInfosService from "../../services/process/updateProcessInfosService";
 
 export default class ProcessFactory {
   public constructor() {}
@@ -16,9 +17,15 @@ export default class ProcessFactory {
 
     const filterProcessById = new FilterProcessByIdService(models.processModel);
 
+    const updateProcessInfosService = new UpdateProcessInfosService(
+      models.clientModel,
+      models.processModel
+    );
+
     return {
       createNewProcessService,
       filterProcessById,
+      updateProcessInfosService,
     };
   }
 

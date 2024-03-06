@@ -1,5 +1,10 @@
 import { IParticipantProcessModel } from "../../@types/participant_process";
-import { IProcessSave, IProcess, IProcessModel } from "../../@types/process";
+import {
+  IProcessSave,
+  IProcess,
+  IProcessModel,
+  IProcessUpdate,
+} from "../../@types/process";
 import pool from "../../lib/pg";
 import ProcessRepository from "../../repositories/processRepository";
 
@@ -34,7 +39,7 @@ export default class ProcessModel implements ProcessRepository {
       ]
     );
 
-    return this.formatProcessSchema(rows[0]);
+    return this.formatProcessSchemaSingle(rows[0]);
   }
 
   public async findByNumber(dto: string): Promise<IProcess | null> {
@@ -45,7 +50,7 @@ export default class ProcessModel implements ProcessRepository {
 
     if (!rows.length) return null;
 
-    return this.formatProcessSchema(rows[0]);
+    return this.formatProcessSchemaComplete(rows[0]);
   }
 
   public async findById(dto: string): Promise<IProcess | null> {
@@ -75,10 +80,51 @@ export default class ProcessModel implements ProcessRepository {
 
     if (!process.length) return null;
 
-    return this.formatProcessSchema({
+    return this.formatProcessSchemaComplete({
       ...process[0],
       participantProcess: processParticipants,
     });
+  }
+
+  async updateProcess(
+    processId: string,
+    dto: IProcessUpdate
+  ): Promise<IProcess> {
+    const modelFields = {
+      cause_value: dto.causeValue,
+      type: dto.type,
+      quote_date: dto.quoteDate,
+      audience_date: dto.audienceDate,
+      forum: dto.forum,
+      city: dto.city,
+      state: dto.state,
+    };
+
+    const setStatement: string[] = [];
+
+    const values: any[] = [];
+
+    const fieldsToUpdate = Object.keys(modelFields).filter(
+      (val) => modelFields[val as keyof typeof modelFields] !== undefined
+    );
+
+    fieldsToUpdate.forEach((field, idx) => {
+      setStatement.push(`${field} = $${idx + 1}`);
+
+      values.push(modelFields[field as keyof typeof modelFields]);
+    });
+
+    const { rows } = await pool.query(
+      `
+      UPDATE tb_process
+      SET ${setStatement.join(", ")}
+      WHERE id = $${values.length + 1}
+      RETURNING *;
+    `,
+      [...values, processId]
+    );
+
+    return this.formatProcessSchemaSingle(rows[0]);
   }
 
   private formatParticipantProcessSchema(pp: IParticipantProcessModel) {
@@ -103,7 +149,16 @@ export default class ProcessModel implements ProcessRepository {
     };
   }
 
-  private formatProcessSchema(dto: IProcessModel): IProcess {
+  private formatProcessSchemaComplete(dto: IProcessModel): IProcess {
+    return {
+      ...this.formatProcessSchemaSingle(dto),
+      participantProcess: dto.participantProcess?.map((pp) => {
+        return this.formatParticipantProcessSchema(pp);
+      }),
+    };
+  }
+
+  private formatProcessSchemaSingle(dto: IProcessModel): IProcess {
     return {
       id: dto.id,
       audienceDate: dto.audience_date,
@@ -118,9 +173,6 @@ export default class ProcessModel implements ProcessRepository {
       createdAt: dto.created_at,
       updatedAt: dto.updated_at,
       deletedAt: dto.deleted_at!,
-      participantProcess: dto.participantProcess?.map((pp) => {
-        return this.formatParticipantProcessSchema(pp);
-      }),
     };
   }
 }

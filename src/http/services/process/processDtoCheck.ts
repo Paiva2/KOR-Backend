@@ -4,6 +4,16 @@ import BadRequestException from "../../exceptions/badRequestException";
 export default class ProcessDtoCheck {
   public constructor() {}
 
+  public updateProcessInfosDtoCheck(processId: string, clientId: string) {
+    if (!processId) {
+      throw new BadRequestException("processId can't be empty.");
+    }
+
+    if (!clientId) {
+      throw new BadRequestException("processId can't be empty.");
+    }
+  }
+
   public createProcessDtoCheck(clientId: string, dto: IProcessSave) {
     if (!dto.audienceDate) {
       throw new BadRequestException("Invalid audience date.");

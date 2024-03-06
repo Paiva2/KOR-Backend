@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { IProcessSave, IProcess } from "../../@types/process";
+import { IProcessSave, IProcess, IProcessUpdate } from "../../@types/process";
 import ProcessRepository from "../../repositories/processRepository";
 import InMemoryParticipantProcessRepository from "./inMemoryParticipantProcessRepository";
 
@@ -63,5 +63,30 @@ export default class InMemoryProcessRepository implements ProcessRepository {
       ...find,
       participantProcess: findParticipantsFromProcess,
     };
+  }
+
+  public async updateProcess(
+    processId: string,
+    dto: IProcessUpdate
+  ): Promise<IProcess> {
+    let updatedProcess = {} as IProcess;
+
+    this.process = this.process.map((process) => {
+      if (process.id === processId) {
+        process = {
+          ...process,
+          ...dto,
+          updatedAt: new Date(),
+        };
+
+        updatedProcess = process;
+      }
+
+      return process;
+    });
+
+    console.log(updatedProcess);
+
+    return updatedProcess;
   }
 }

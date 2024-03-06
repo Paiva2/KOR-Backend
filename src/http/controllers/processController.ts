@@ -13,11 +13,14 @@ export default class ProcessController {
 
     const { createNewProcessService } = await this.factory.exec();
 
-    const parseToken = this.jwtService.decode(
+    const parseSubjectToken = this.jwtService.decode(
       req.headers.authorization!.replace("Bearer ", "")
     );
 
-    const newProcess = await createNewProcessService.exec(parseToken!, dto);
+    const newProcess = await createNewProcessService.exec(
+      parseSubjectToken!,
+      dto
+    );
 
     return res.status(201).send({
       message: "Processo criado com sucesso.",
@@ -36,5 +39,27 @@ export default class ProcessController {
     const getProcess = await filterProcessById.exec(processId);
 
     return res.status(200).send(getProcess);
+  };
+
+  public updateProcessInfos = async (req: Request, res: Response) => {
+    const dto = req.body;
+    const { processId } = req.params;
+
+    const parseSubjectToken = this.jwtService.decode(
+      req.headers.authorization!.replace("Bearer ", "")
+    );
+
+    const { updateProcessInfosService } = await this.factory.exec();
+
+    const performUpdate = await updateProcessInfosService.exec(
+      parseSubjectToken,
+      processId,
+      dto
+    );
+
+    return res.status(200).send({
+      message: "Processo atualizado com sucesso.",
+      processUpdated: performUpdate,
+    });
   };
 }

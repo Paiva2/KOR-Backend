@@ -47,3 +47,13 @@ export interface IProcessModel {
   deleted_at: Date | null;
   participantProcess: IParticipantProcessModel[];
 }
+
+export interface IProcessUpdate {
+  causeValue?: string;
+  type?: ProcessType;
+  quoteDate?: Date;
+  audienceDate?: Date;
+  forum?: string;
+  city?: strig;
+  state?: string;
+}

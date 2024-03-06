@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { dtoHandler } from "../middlewares/DtoHandler";
-import { createProcessDTO } from "../dtos/processDtos";
+import { createProcessDTO, updateProcessDTO } from "../dtos/processDtos";
 import ProcessController from "../controllers/processController";
 import tokenHandler from "../middlewares/tokenHandler";
 
@@ -9,9 +9,15 @@ export default function processRoutes(app: Express) {
 
   app.post(
     "/processo",
-    [dtoHandler(createProcessDTO), tokenHandler],
+    [tokenHandler, dtoHandler(createProcessDTO)],
     processController.newProcess
   );
 
   app.get("/processo/:processId", processController.filterProcessWithId);
+
+  app.patch(
+    "/processo/:processId",
+    [tokenHandler, dtoHandler(updateProcessDTO)],
+    processController.updateProcessInfos
+  );
 }
