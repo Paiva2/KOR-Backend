@@ -1,0 +1,473 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "KOR Backend REST",
+    "description": "API Rest documentation of tech challenge from KOR.",
+    "contact": {
+      "email": "joaovitor.paiva145@hotmail.com"
+    },
+    "version": "1.0.0"
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Bearer token to access authorized routes. PS: Paste only the token that you received on login.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+
+  "tags": [
+    {
+      "name": "Cliente",
+      "description": "Client routes"
+    },
+    {
+      "name": "Participante",
+      "description": "Participant routes"
+    },
+    {
+      "name": "Participante para um processo",
+      "description": "Participant of process routes"
+    },
+    {
+      "name": "Processo",
+      "description": "Process routes"
+    }
+  ],
+
+  "paths": {
+    "/cliente/registro": {
+      "post": {
+        "tags": ["Cliente"],
+        "summary": "Create a new client",
+        "description": "Register a client",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "Nome do cliente",
+                    "type": "string",
+                    "example": "Cliente X"
+                  },
+                  "cnpj": {
+                    "description": "CNPJ do cliente",
+                    "type": "string",
+                    "example": "33.483.364/0001-26"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente registrado com sucesso."
+          }
+        }
+      }
+    },
+
+    "/cliente/login": {
+      "post": {
+        "tags": ["Cliente"],
+        "summary": "Login as an client",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "description": "CNPJ do cliente",
+                    "type": "string",
+                    "example": "33.483.364/0001-26"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticado com sucesso..",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "description": "Authorization Token",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/processo": {
+      "post": {
+        "tags": ["Processo"],
+        "summary": "Create a new process. AUTH TOKEN REQUIRED!",
+
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "number": {
+                        "description": "Número do processo",
+                        "type": "string",
+                        "example": "1234567",
+                        "required": true
+                      },
+                      "causeValue": {
+                        "description": "Valor da causa",
+                        "type": "string",
+                        "example": "R$ 500",
+                        "required": true
+                      },
+                      "type": {
+                        "description": "Tipo do processo",
+                        "type": "string",
+                        "example": "administrative",
+                        "required": true
+                      },
+                      "quoteDate": {
+                        "description": "Data da citação",
+                        "type": "string",
+                        "example": "2024-02-05T20:51:52.926Z",
+                        "required": true
+                      },
+                      "audienceDate": {
+                        "description": "Data da audiência",
+                        "type": "string",
+                        "example": "2024-03-25T20:51:52.926Z",
+                        "required": true
+                      },
+                      "forum": {
+                        "description": "Forum do processo",
+                        "type": "string",
+                        "example": "Forum X",
+                        "required": true
+                      },
+                      "city": {
+                        "description": "Cidade do processo",
+                        "type": "string",
+                        "example": "Salvador",
+                        "required": true
+                      },
+                      "state": {
+                        "description": "Estado do processo",
+                        "type": "string",
+                        "example": "BA",
+                        "required": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Processo criado com sucesso."
+          }
+        }
+      }
+    },
+
+    "/processo/{processId}": {
+      "get": {
+        "tags": ["Processo"],
+        "summary": "Filter an process by its id.",
+        "parameters": [
+          {
+            "name": "processId",
+            "in": "path",
+            "schema": {
+              "processId": {
+                "type": "string",
+                "required": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtrado com sucesso."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Processo"],
+        "summary": "Delete an process by its id.",
+        "parameters": [
+          {
+            "name": "processId",
+            "in": "path",
+            "schema": {
+              "processId": {
+                "type": "string",
+                "required": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletado com sucesso."
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Processo"],
+        "summary": "Update an process by its id.",
+        "parameters": [
+          {
+            "name": "processId",
+            "in": "path",
+            "schema": {
+              "processId": {
+                "type": "string",
+                "required": true
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "causeValue": {
+                    "description": "Novo valor da causa",
+                    "example": "R$ 600",
+                    "type": "string",
+                    "required": false
+                  },
+                  "state": {
+                    "description": "Novo estado",
+                    "example": "SC",
+                    "type": "string",
+                    "required": false
+                  },
+                  "city": {
+                    "description": "Nova cidade",
+                    "example": "Florianópolis",
+                    "type": "string",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Atualizado com sucesso."
+          }
+        }
+      }
+    },
+
+    "/processos": {
+      "get": {
+        "tags": ["Processo"],
+        "summary": "List all process",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "cliente",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "participante",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtrado com sucesso."
+          }
+        }
+      }
+    },
+
+    "/novo-participante": {
+      "get": {
+        "tags": ["Participante"],
+        "summary": "Register a new participant on system.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do participante",
+                    "required": true,
+                    "example": "Participante 1"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "E-mail do participante",
+                    "required": true,
+                    "example": "participante2@email.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "Contato do participante",
+                    "required": true,
+                    "example": "(11) 9 3224-6805"
+                  },
+                  "document": {
+                    "type": "string",
+                    "description": "Documento (CPF) do participante.",
+                    "required": true,
+                    "example": "969.276.430-36"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Tipo do participante",
+                    "required": true,
+                    "example": "lawyer"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Participante registrado com sucesso."
+          }
+        }
+      }
+    },
+
+    "/participante/processo": {
+      "post": {
+        "tags": ["Participante para um processo"],
+        "summary": "Inserts a participant on a process.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "processId": {
+                    "description": "ID do processo (Precisa ser válido)",
+                    "type": "string"
+                  },
+                  "participantId": {
+                    "description": "ID do participante (Precisa ser válido)",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Participante inserido com sucesso no processo."
+          }
+        }
+      }
+    },
+
+    "/processo/{processId}/participantes": {
+      "get": {
+        "tags": ["Processo"],
+        "summary": "Filtrar todos os participantes de um processo.",
+        "parameters": [
+          {
+            "name": "processId",
+            "in": "path",
+            "schema": {
+              "processId": {
+                "type": "string",
+                "required": true
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtrado com sucesso."
+          }
+        }
+      }
+    }
+  }
+}

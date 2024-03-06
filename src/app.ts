@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import globalExceptionHandler from "./http/middlewares/globalExceptionHandler";
 import { pingDb } from "./utils/pingDb";
 import routes from "./http/routes";
+import swaggerUi from "swagger-ui-express";
+import swaggerDoc from "../swaggerDoc.json";
 import "express-async-errors";
 import "dotenv/config";
 
@@ -13,6 +15,8 @@ app.use(bodyParser.json());
 (async () => {
   await pingDb();
 })();
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 routes(app);
 
