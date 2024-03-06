@@ -8,4 +8,6 @@ export default interface ProcessRepository {
   findById(dto: string): Promise<IProcess | null>;
 
   updateProcess(processId: string, dto: IProcessUpdate): Promise<IProcess>;
+
+  delete(dto: string): Promise<IProcess>;
 }

@@ -10,7 +10,17 @@ export default class ProcessDtoCheck {
     }
 
     if (!clientId) {
+      throw new BadRequestException("clientId can't be empty.");
+    }
+  }
+
+  public deleteProcessInfosDtoCheck(processId: string, clientId: string) {
+    if (!processId) {
       throw new BadRequestException("processId can't be empty.");
+    }
+
+    if (!clientId) {
+      throw new BadRequestException("clientId can't be empty.");
     }
   }
 

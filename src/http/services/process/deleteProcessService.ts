@@ -6,7 +6,7 @@ import ClientRepository from "../../repositories/clientRepository";
 import ProcessRepository from "../../repositories/processRepository";
 import ProcessDtoCheck from "./processDtoCheck";
 
-export default class CreateNewProcessService {
+export default class DeleteProcessService {
   private dtoCheck = new ProcessDtoCheck();
 
   public constructor(
@@ -14,12 +14,8 @@ export default class CreateNewProcessService {
     private readonly processRepository: ProcessRepository
   ) {}
 
-  public async exec(clientId: string, dto: IProcessSave): Promise<IProcess> {
-    this.dtoCheck.createProcessDtoCheck(clientId, dto);
-
-    if (dto.audienceDate < new Date()) {
-      throw new ConflictException("Audience date can't be in the past.");
-    }
+  public async exec(clientId: string, processId: string): Promise<IProcess> {
+    this.dtoCheck.deleteProcessInfosDtoCheck(clientId, processId);
 
     const doesProcessClientExists = await this.clientRepository.findById(
       clientId
@@ -36,17 +32,22 @@ export default class CreateNewProcessService {
       throw new ForbiddenException("Client has been deactivated.");
     }
 
-    const doesProcessNumberAlreadyExists =
-      await this.processRepository.findByNumber(dto.number);
+    const doesProcessExists = await this.processRepository.findById(processId);
 
-    if (!isProcessOwnerDeactivated && doesProcessNumberAlreadyExists) {
-      throw new ConflictException(
-        "An process with this number already exists."
-      );
+    if (!doesProcessExists) {
+      throw new NotFoundException("Process not found.");
     }
 
-    const creation = await this.processRepository.save(clientId, dto);
+    if (doesProcessExists.deletedAt !== null) {
+      throw new ConflictException("Process is already deactivated/excluded.");
+    }
 
-    return creation;
+    if (doesProcessClientExists.id !== doesProcessExists.clientId) {
+      throw new ForbiddenException("Only process owner can disable a process.");
+    }
+
+    const performDelete = await this.processRepository.delete(processId);
+
+    return performDelete;
   }
 }

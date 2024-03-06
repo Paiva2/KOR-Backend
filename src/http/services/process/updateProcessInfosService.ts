@@ -19,7 +19,7 @@ export default class UpdateProcessInfosService {
     processId: string,
     dto: IProcessUpdate
   ): Promise<IProcess> {
-    this.dtoCheck.updateProcessInfosDtoCheck(clientId, processId);
+    this.dtoCheck.updateProcessInfosDtoCheck(processId, clientId);
 
     if (dto.audienceDate && dto.audienceDate < new Date()) {
       throw new ConflictException("Audience date can't be in the past.");

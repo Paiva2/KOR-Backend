@@ -9,6 +9,7 @@ import InMemoryProcessRepository from "../../../models/in-memory/inMemoryProcess
 import InMemoryParticipantProcessRepository from "../../../models/in-memory/inMemoryParticipantProcessRepository";
 import InMemoryParticipantsRepository from "../../../models/in-memory/inMemoryParticipantsRepository";
 import UpdateProcessInfosService from "../updateProcessInfosService";
+import { randomUUID } from "crypto";
 
 const randomCnpj = "33.483.364/0001-29"; // generated with https://www.4devs.com.br/gerador_de_cnpj
 
@@ -98,5 +99,102 @@ describe("Update process infos", () => {
         deletedAt: null,
       })
     );
+  });
+
+  it("should throw exception over empty processId dto", async () => {
+    await expect(() => {
+      return sut.exec(client.id, "", {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("processId can't be empty.");
+  });
+
+  it("should throw exception over empty clientId dto", async () => {
+    await expect(() => {
+      return sut.exec("", process.id, {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("clientId can't be empty.");
+  });
+
+  it("should throw an exception if new audience date is on past", async () => {
+    await expect(() => {
+      return sut.exec(client.id, process.id, {
+        audienceDate: new Date(2030, 0, 19, 0, 0),
+      });
+    }).rejects.toThrowError("Audience date can't be in the past.");
+  });
+
+  it("should throw an exception if client is not found", async () => {
+    await expect(() => {
+      return sut.exec(randomUUID(), process.id, {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("Client not found.");
+  });
+
+  it("should throw an exception if process is not found", async () => {
+    await expect(() => {
+      return sut.exec(client.id, randomUUID(), {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("Process not found.");
+  });
+
+  it("should throw an exception if process is deactivated", async () => {
+    const getProcess = processRepository.process.find(
+      (p) => p.id === process.id
+    )!;
+
+    getProcess.deletedAt = new Date();
+
+    await expect(() => {
+      return sut.exec(client.id, process.id, {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("Process deactivated.");
+  });
+
+  it("should throw an exception if client id provided isnt the process owner", async () => {
+    const alternativeClient = await registerClientService.exec({
+      name: "John Doe 2",
+      cnpj: "33.483.364/0001-30",
+    });
+
+    await expect(() => {
+      return sut.exec(alternativeClient.id, process.id, {
+        audienceDate: new Date(2030, 1, 23, 0, 0),
+        causeValue: "R$ 300,00",
+        city: "Blumenau",
+        state: "SC",
+        forum: "Forum Y",
+        type: ProcessType.JUDICIAL,
+      });
+    }).rejects.toThrowError("Only process owners can update their processes.");
   });
 });

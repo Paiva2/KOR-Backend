@@ -109,8 +109,6 @@ describe("Filter process by id service", () => {
   it("should filter an process by its id", async () => {
     const filterProcess = await sut.exec(process.id);
 
-    console.log(filterProcess);
-
     expect(filterProcess).toEqual(
       expect.objectContaining({
         id: process.id,
@@ -149,5 +147,11 @@ describe("Filter process by id service", () => {
         ],
       })
     );
+  });
+
+  it("should throw an exception over empty processId dto", async () => {
+    await expect(() => {
+      return sut.exec("");
+    }).rejects.toThrowError("processId can't be empty.");
   });
 });
