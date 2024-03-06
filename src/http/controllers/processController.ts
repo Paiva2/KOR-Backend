@@ -27,4 +27,14 @@ export default class ProcessController {
       },
     });
   };
+
+  public filterProcessWithId = async (req: Request, res: Response) => {
+    const { processId } = req.params;
+
+    const { filterProcessById } = await this.factory.exec();
+
+    const getProcess = await filterProcessById.exec(processId);
+
+    return res.status(200).send(getProcess);
+  };
 }

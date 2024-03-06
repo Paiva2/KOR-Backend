@@ -1,4 +1,3 @@
-import type { IParticipantSave } from "../@types/participant";
 import type {
   IParticipantProcess,
   IParticipantProcessSave,

@@ -6,6 +6,8 @@ import InMemoryClientRepository from "../../../models/in-memory/inMemoryClientRe
 import RegisterClientService from "../../client/registerClientService";
 import CreateNewProcessService from "../createNewProcessService";
 import InMemoryProcessRepository from "../../../models/in-memory/inMemoryProcessRepository";
+import InMemoryParticipantProcessRepository from "../../../models/in-memory/inMemoryParticipantProcessRepository";
+import InMemoryParticipantsRepository from "../../../models/in-memory/inMemoryParticipantsRepository";
 
 const randomCnpj = "33.483.364/0001-29"; // generated with https://www.4devs.com.br/gerador_de_cnpj
 
@@ -25,6 +27,8 @@ describe("Create new process", () => {
 
   let clientRepository: InMemoryClientRepository;
   let processRepository: InMemoryProcessRepository;
+  let participantProcessRepository: InMemoryParticipantProcessRepository;
+  let participantRepository: InMemoryParticipantsRepository;
 
   let registerClientService: RegisterClientService;
 
@@ -32,7 +36,15 @@ describe("Create new process", () => {
 
   beforeEach(async () => {
     clientRepository = new InMemoryClientRepository();
-    processRepository = new InMemoryProcessRepository();
+    participantRepository = new InMemoryParticipantsRepository();
+
+    participantProcessRepository = new InMemoryParticipantProcessRepository(
+      participantRepository
+    );
+
+    processRepository = new InMemoryProcessRepository(
+      participantProcessRepository
+    );
 
     registerClientService = new RegisterClientService(clientRepository);
 

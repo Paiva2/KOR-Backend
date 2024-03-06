@@ -1,3 +1,8 @@
+import {
+  IParticipantProcess,
+  IParticipantProcessModel,
+} from "./participant_process";
+
 export interface IProcessSave {
   number: string;
   causeValue: string;
@@ -23,6 +28,7 @@ export interface IProcess {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  participantProcess?: IParticipantProcess[];
 }
 
 export interface IProcessModel {
@@ -39,4 +45,5 @@ export interface IProcessModel {
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
+  participantProcess: IParticipantProcessModel[];
 }

@@ -12,4 +12,6 @@ export default function processRoutes(app: Express) {
     [dtoHandler(createProcessDTO), tokenHandler],
     processController.newProcess
   );
+
+  app.get("/processo/:processId", processController.filterProcessWithId);
 }

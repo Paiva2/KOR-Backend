@@ -4,11 +4,18 @@ import {
   IParticipantProcessSave,
 } from "../../@types/participant_process";
 import ParticipantProcessRepository from "../../repositories/participantProcessRepository";
+import InMemoryParticipantsRepository from "./inMemoryParticipantsRepository";
 
 export default class InMemoryParticipantProcessRepository
   implements ParticipantProcessRepository
 {
   public participantsProcess: IParticipantProcess[] = [];
+
+  private participantRepository: InMemoryParticipantsRepository;
+
+  public constructor(participantRepository: InMemoryParticipantsRepository) {
+    this.participantRepository = participantRepository;
+  }
 
   async save(dto: IParticipantProcessSave): Promise<IParticipantProcess> {
     const newParticipantProcess: IParticipantProcess = {
@@ -36,5 +43,27 @@ export default class InMemoryParticipantProcessRepository
           pp.processId === dto.processId
       ) ?? null
     );
+  }
+
+  public async findAllByProcessId(
+    processId: string
+  ): Promise<IParticipantProcess[]> {
+    let findParticipantsProcess = this.participantsProcess.filter(
+      (participant) => participant.processId === processId
+    );
+
+    findParticipantsProcess = findParticipantsProcess.map((pp) => {
+      const findParticipant = this.participantRepository?.participants.find(
+        (participant) => participant.id === pp.participantId
+      );
+
+      if (findParticipant) {
+        pp.participant = findParticipant;
+      }
+
+      return pp;
+    });
+
+    return findParticipantsProcess;
   }
 }

@@ -46,8 +46,16 @@ describe("Create new process participant", () => {
 
   beforeEach(async () => {
     clientRepository = new InMemoryClientRepository();
-    processRepository = new InMemoryProcessRepository();
+
     participantRepository = new InMemoryParticipantsRepository();
+
+    participantProcessRepository = new InMemoryParticipantProcessRepository(
+      participantRepository
+    );
+
+    processRepository = new InMemoryProcessRepository(
+      participantProcessRepository
+    );
 
     registerClientService = new RegisterClientService(clientRepository);
 
@@ -59,8 +67,6 @@ describe("Create new process participant", () => {
     registerParticipantService = new RegisterParticipantService(
       participantRepository
     );
-
-    participantProcessRepository = new InMemoryParticipantProcessRepository();
 
     sut = new InsertProcessParticipantService(
       processRepository,

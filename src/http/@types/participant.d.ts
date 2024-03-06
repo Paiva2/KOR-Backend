@@ -19,15 +19,3 @@ export interface IParticipant {
   updatedAt: Date;
   deletedAt: Date | null;
 }
-
-export interface IParticipantModel {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  document: string;
-  type: ParticipantType;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date | null;
-}

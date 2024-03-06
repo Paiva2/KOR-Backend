@@ -1,3 +1,4 @@
+import { IParticipantProcessModel } from "../../@types/participant_process";
 import { IProcessSave, IProcess, IProcessModel } from "../../@types/process";
 import pool from "../../lib/pg";
 import ProcessRepository from "../../repositories/processRepository";
@@ -48,14 +49,58 @@ export default class ProcessModel implements ProcessRepository {
   }
 
   public async findById(dto: string): Promise<IProcess | null> {
-    const { rows } = await pool.query(
+    const { rows: process } = await pool.query(
       "SELECT * FROM tb_process WHERE id = $1",
       [dto]
     );
 
-    if (!rows.length) return null;
+    const { rows: processParticipants } = await pool.query(
+      `
+      SELECT pp.*,
+        pt.id as participant_id,
+        pt.full_name as participant_full_name,
+        pt.email as participant_email,
+        pt.phone as participant_phone,
+        pt."document" as participant_document,
+        pt."type" as participant_type,
+        pt.created_at as participant_created_at,
+        pt.updated_at as participant_updated_at,
+        pt.deleted_at as participant_deleted_at
+      FROM tb_process_participants pp INNER JOIN tb_participants pt
+      ON pp.participant_id = pt.id
+      WHERE pp.process_id = $1
+    `,
+      [dto]
+    );
 
-    return this.formatProcessSchema(rows[0]);
+    if (!process.length) return null;
+
+    return this.formatProcessSchema({
+      ...process[0],
+      participantProcess: processParticipants,
+    });
+  }
+
+  private formatParticipantProcessSchema(pp: IParticipantProcessModel) {
+    return {
+      id: pp.id,
+      processId: pp.process_id,
+      participantId: pp.participant_id,
+      createdAt: pp.created_at,
+      updatedAt: pp.updated_at,
+      deletedAt: pp.deleted_at,
+      participant: {
+        id: pp.participant_id,
+        name: pp.participant_full_name,
+        email: pp.participant_email,
+        document: pp.participant_document,
+        phone: pp.participant_phone,
+        type: pp.participant_type,
+        createdAt: pp.participant_created_at,
+        updatedAt: pp.participant_updated_at,
+        deletedAt: pp.participant_deleted_at,
+      },
+    };
   }
 
   private formatProcessSchema(dto: IProcessModel): IProcess {
@@ -71,8 +116,11 @@ export default class ProcessModel implements ProcessRepository {
       state: dto.state,
       type: dto.type,
       createdAt: dto.created_at,
-      deletedAt: dto.deleted_at!,
       updatedAt: dto.updated_at,
+      deletedAt: dto.deleted_at!,
+      participantProcess: dto.participantProcess?.map((pp) => {
+        return this.formatParticipantProcessSchema(pp);
+      }),
     };
   }
 }
