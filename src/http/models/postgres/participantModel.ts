@@ -52,6 +52,17 @@ export default class ParticipantModel implements ParticipantRepository {
     return this.formatParticipantSchema(rows[0]);
   }
 
+  public async findById(dto: string): Promise<IParticipant | null> {
+    const { rows } = await pool.query(
+      `SELECT * FROM tb_participants WHERE id = $1`,
+      [dto]
+    );
+
+    if (!rows.length) return null;
+
+    return this.formatParticipantSchema(rows[0]);
+  }
+
   private formatParticipantSchema(dto: IParticipantModel): IParticipant {
     return {
       id: dto.id,

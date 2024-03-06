@@ -1,7 +1,6 @@
-import { afterEach } from "node:test";
+import { beforeEach, describe, it, expect, vi, afterEach } from "vitest";
 import { randomUUID } from "node:crypto";
 import { ProcessType } from "../../../@types/enums";
-import { beforeEach, describe, it, expect, vi } from "vitest";
 import type { IClient } from "../../../@types/client";
 import InMemoryClientRepository from "../../../models/in-memory/inMemoryClientRepository";
 import RegisterClientService from "../../client/registerClientService";

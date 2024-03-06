@@ -43,4 +43,10 @@ export default class InMemoryParticipantsRepository
       ) ?? null
     );
   }
+
+  public async findById(dto: string): Promise<IParticipant | null> {
+    return (
+      this.participants.find((participant) => participant.id === dto) ?? null
+    );
+  }
 }

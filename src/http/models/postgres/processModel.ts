@@ -47,6 +47,17 @@ export default class ProcessModel implements ProcessRepository {
     return this.formatProcessSchema(rows[0]);
   }
 
+  public async findById(dto: string): Promise<IProcess | null> {
+    const { rows } = await pool.query(
+      "SELECT * FROM tb_process WHERE id = $1",
+      [dto]
+    );
+
+    if (!rows.length) return null;
+
+    return this.formatProcessSchema(rows[0]);
+  }
+
   private formatProcessSchema(dto: IProcessModel): IProcess {
     return {
       id: dto.id,

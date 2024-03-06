@@ -3,6 +3,7 @@ import ProcessFactory from "./factories/processFactory";
 import JwtService from "../services/jwt/jwtService";
 
 export default class ProcessController {
+  private factory = new ProcessFactory();
   private jwtService = new JwtService();
 
   public constructor() {}
@@ -10,9 +11,7 @@ export default class ProcessController {
   public newProcess = async (req: Request, res: Response) => {
     const dto = req.body;
 
-    const factory = new ProcessFactory();
-
-    const { createNewProcessService } = await factory.exec();
+    const { createNewProcessService } = await this.factory.exec();
 
     const parseToken = this.jwtService.decode(
       req.headers.authorization!.replace("Bearer ", "")

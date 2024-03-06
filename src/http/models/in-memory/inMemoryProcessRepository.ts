@@ -30,4 +30,8 @@ export default class InMemoryProcessRepository implements ProcessRepository {
   public async findByNumber(dto: string): Promise<IProcess | null> {
     return this.process.find((process) => process.number === dto) ?? null;
   }
+
+  public async findById(dto: string): Promise<IProcess | null> {
+    return this.process.find((process) => process.id === dto) ?? null;
+  }
 }

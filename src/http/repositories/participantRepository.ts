@@ -8,4 +8,6 @@ export default interface ParticipantRepository {
     document: string;
     email: string;
   }): Promise<IParticipant | null>;
+
+  findById(dto: string): Promise<IParticipant | null>;
 }
