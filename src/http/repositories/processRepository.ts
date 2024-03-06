@@ -1,4 +1,9 @@
-import type { IProcess, IProcessSave, IProcessUpdate } from "../@types/process";
+import type {
+  IProcess,
+  IProcessClientAndParticipant,
+  IProcessSave,
+  IProcessUpdate,
+} from "../@types/process";
 
 export default interface ProcessRepository {
   save(clientId: string, dto: IProcessSave): Promise<IProcess>;
@@ -15,7 +20,7 @@ export default interface ProcessRepository {
   }): Promise<{
     page: number;
     perPage: number;
-    list: IProcess[];
+    list: IProcess[] | IProcessClientAndParticipant[];
   }>;
 
   updateProcess(processId: string, dto: IProcessUpdate): Promise<IProcess>;

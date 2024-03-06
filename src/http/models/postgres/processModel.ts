@@ -155,7 +155,12 @@ export default class ProcessModel implements ProcessRepository {
   ): Promise<IProcessClientAndParticipant[]> {
     const { rows } = await pool.query(
       `
-      SELECT 
+    WITH get_participant_processess AS (
+      SELECT process_id FROM tb_process_participants 
+      WHERE participant_id = $2
+    )
+
+    SELECT 
       pcs.*,
       cc.id as client_id,
       cc.full_name as client_name,
@@ -176,7 +181,7 @@ export default class ProcessModel implements ProcessRepository {
     INNER JOIN tb_clients cc ON cc.id = pcs.client_id
     INNER JOIN tb_process_participants pp ON pp.process_id = pcs.id 
     INNER JOIN tb_participants pt ON pt.id = pp.participant_id
-    WHERE pcs.client_id = $1 AND pp.participant_id = $2
+    WHERE pcs.id IN (SELECT * FROM get_participant_processess) OR pcs.client_id = $1
     ORDER BY created_at DESC
     LIMIT $3 OFFSET ($4 - 1) * $3
 `,
@@ -200,7 +205,7 @@ export default class ProcessModel implements ProcessRepository {
         SELECT process_id FROM tb_process_participants WHERE participant_id = $1
       )
 
-      SELECT 
+    SELECT 
       pcs.*,
       cc.id as client_id,
       cc.full_name as client_name,
@@ -241,7 +246,7 @@ export default class ProcessModel implements ProcessRepository {
   ) {
     const { rows } = await pool.query(
       `
-      SELECT 
+    SELECT 
       pcs.*,
       cc.id as client_id,
       cc.full_name as client_name,
@@ -278,7 +283,7 @@ export default class ProcessModel implements ProcessRepository {
   private async filterAllProcess(page: number, perPage: number) {
     const { rows } = await pool.query(
       `
-      SELECT 
+    SELECT 
       pcs.*,
       cc.id as client_id,
       cc.full_name as client_name,
@@ -316,7 +321,11 @@ export default class ProcessModel implements ProcessRepository {
     participant?: string | undefined;
     page: string;
     perPage: string;
-  }): Promise<{ page: number; perPage: number; list: IProcess[] }> {
+  }): Promise<{
+    page: number;
+    perPage: number;
+    list: IProcess[] | IProcessClientAndParticipant[];
+  }> {
     let list: IProcessClientAndParticipant[] = [];
 
     const page = +query.page;
