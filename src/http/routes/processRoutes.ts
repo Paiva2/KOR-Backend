@@ -20,4 +20,10 @@ export default function processRoutes(app: Express) {
     [tokenHandler, dtoHandler(updateProcessDTO)],
     processController.updateProcessInfos
   );
+
+  app.delete(
+    "/processo/:processId",
+    [tokenHandler],
+    processController.deleteProcessById
+  );
 }

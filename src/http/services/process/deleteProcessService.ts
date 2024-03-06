@@ -15,7 +15,7 @@ export default class DeleteProcessService {
   ) {}
 
   public async exec(clientId: string, processId: string): Promise<IProcess> {
-    this.dtoCheck.deleteProcessInfosDtoCheck(clientId, processId);
+    this.dtoCheck.deleteProcessInfosDtoCheck(processId, clientId);
 
     const doesProcessClientExists = await this.clientRepository.findById(
       clientId

@@ -62,4 +62,20 @@ export default class ProcessController {
       processUpdated: performUpdate,
     });
   };
+
+  public deleteProcessById = async (req: Request, res: Response) => {
+    const { processId } = req.params;
+
+    const parseSubjectToken = this.jwtService.decode(
+      req.headers.authorization!.replace("Bearer ", "")
+    );
+
+    const { deleteProcessService } = await this.factory.exec();
+
+    await deleteProcessService.exec(parseSubjectToken, processId);
+
+    return res.status(200).send({
+      message: "Processo deletado com sucesso.",
+    });
+  };
 }

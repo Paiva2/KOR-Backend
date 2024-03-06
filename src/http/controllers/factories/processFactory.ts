@@ -1,6 +1,7 @@
 import ClientModel from "../../models/postgres/clientModel";
 import ProcessModel from "../../models/postgres/processModel";
 import CreateNewProcessService from "../../services/process/createNewProcessService";
+import DeleteProcessService from "../../services/process/deleteProcessService";
 import FilterProcessByIdService from "../../services/process/filterProcessByIdService";
 import UpdateProcessInfosService from "../../services/process/updateProcessInfosService";
 
@@ -22,10 +23,16 @@ export default class ProcessFactory {
       models.processModel
     );
 
+    const deleteProcessService = new DeleteProcessService(
+      models.clientModel,
+      models.processModel
+    );
+
     return {
       createNewProcessService,
       filterProcessById,
       updateProcessInfosService,
+      deleteProcessService,
     };
   }
 

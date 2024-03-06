@@ -85,8 +85,26 @@ export default class InMemoryProcessRepository implements ProcessRepository {
       return process;
     });
 
-    console.log(updatedProcess);
-
     return updatedProcess;
+  }
+
+  public async delete(dto: string): Promise<IProcess> {
+    let deletedProcess = {} as IProcess;
+
+    this.process = this.process.map((process) => {
+      if (process.id === dto) {
+        process = {
+          ...process,
+          updatedAt: new Date(),
+          deletedAt: new Date(),
+        };
+
+        deletedProcess = process;
+      }
+
+      return process;
+    });
+
+    return deletedProcess;
   }
 }

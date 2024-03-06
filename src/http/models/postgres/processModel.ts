@@ -117,11 +117,27 @@ export default class ProcessModel implements ProcessRepository {
     const { rows } = await pool.query(
       `
       UPDATE tb_process
-      SET ${setStatement.join(", ")}
+      SET ${setStatement.join(", ")},
+      updated_at = now()
       WHERE id = $${values.length + 1}
       RETURNING *;
     `,
       [...values, processId]
+    );
+
+    return this.formatProcessSchemaSingle(rows[0]);
+  }
+
+  async delete(dto: string): Promise<IProcess> {
+    const { rows } = await pool.query(
+      `
+      UPDATE tb_process
+      SET deleted_at = now(),
+      updated_at = now()
+      WHERE id = $1
+      RETURNING *;
+    `,
+      [dto]
     );
 
     return this.formatProcessSchemaSingle(rows[0]);
