@@ -17,4 +17,22 @@ export default class ProcessParticipantController {
       .status(201)
       .send({ message: "Participante inserido com sucesso no processo." });
   };
+
+  public filterAllProcessParticipants = async (req: Request, res: Response) => {
+    const dto = req.query as {
+      page: string;
+      perPage: string;
+    };
+
+    const { processId } = req.params;
+
+    const { filterProcessParticipantsService } = await this.factory.exec();
+
+    const list = await filterProcessParticipantsService.exec({
+      ...dto,
+      processId,
+    });
+
+    return res.status(200).send(list);
+  };
 }

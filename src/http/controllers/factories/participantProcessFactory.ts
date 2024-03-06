@@ -2,6 +2,7 @@ import ClientModel from "../../models/postgres/clientModel";
 import ParticipantModel from "../../models/postgres/participantModel";
 import ParticipantProcessModel from "../../models/postgres/participantProcessModel";
 import ProcessModel from "../../models/postgres/processModel";
+import FilterProcessParticipants from "../../services/process_participant/filterProcessParticipantsService";
 import InsertProcessParticipantService from "../../services/process_participant/insertProcessParticipantService";
 
 export default class ParticipantProcessFactory {
@@ -16,8 +17,13 @@ export default class ParticipantProcessFactory {
       models.participantProcessModel
     );
 
+    const filterProcessParticipantsService = new FilterProcessParticipants(
+      models.participantProcessModel
+    );
+
     return {
       insertProcessParticipantService,
+      filterProcessParticipantsService,
     };
   }
 

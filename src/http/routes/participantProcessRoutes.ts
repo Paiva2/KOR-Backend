@@ -11,4 +11,9 @@ export default function participantProcessRoutes(app: Express) {
     [dtoHandler(insertProcessParticipantDTO)],
     processParticipantController.insertProcessParticipant
   );
+
+  app.get(
+    "/processo/:processId/participantes",
+    processParticipantController.filterAllProcessParticipants
+  );
 }

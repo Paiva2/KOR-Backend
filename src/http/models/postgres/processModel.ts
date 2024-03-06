@@ -252,7 +252,7 @@ export default class ProcessModel implements ProcessRepository {
     INNER JOIN tb_participants pt ON pt.id = pp.participant_id
     WHERE pcs.client_id = $1
     ORDER BY created_at DESC
-    LIMIT $3 OFFSET ($3 - 1) * $2
+    LIMIT $2 OFFSET ($3 - 1) * $2
   `,
       [clientId, perPage, page]
     );
@@ -328,11 +328,11 @@ export default class ProcessModel implements ProcessRepository {
     return {
       page: page,
       perPage: perPage,
-      list: list.map((process) => this.formatListAll(process)),
+      list: list.map((process) => this.formatListAllSchema(process)),
     };
   }
 
-  private formatListAll(
+  private formatListAllSchema(
     dto: IProcessClientAndParticipantModel
   ): IProcessClientAndParticipant {
     return {

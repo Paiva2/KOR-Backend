@@ -88,4 +88,26 @@ export default class InMemoryParticipantProcessRepository
 
     return findParticipantProcess;
   }
+
+  public async findAllProcessParticipants({
+    page,
+    perPage,
+    processId,
+  }: {
+    processId: string;
+    page: number;
+    perPage: number;
+  }): Promise<{
+    page: number;
+    perPage: number;
+    participantsProcess: IParticipantProcess[];
+  }> {
+    const list = await this.findAllByProcessId(processId);
+
+    return {
+      page,
+      perPage,
+      participantsProcess: list.slice((page - 1) * perPage, perPage * page),
+    };
+  }
 }
