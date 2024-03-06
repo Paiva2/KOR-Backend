@@ -106,13 +106,13 @@ export interface IProcessClientAndParticipant {
   deletedAt: Date | null;
   client: {
     id: string;
-    name: string;
+    fullName: string;
     cnpj: string;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;
   };
-  participant: {
+  participantProcess: {
     id: string;
     name: string;
     email: string;
@@ -122,5 +122,5 @@ export interface IProcessClientAndParticipant {
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;
-  };
+  }[];
 }

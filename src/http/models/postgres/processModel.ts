@@ -1,3 +1,5 @@
+import { IClient } from "../../@types/client";
+import { IParticipant } from "../../@types/participant";
 import { IParticipantProcessModel } from "../../@types/participant_process";
 import {
   IProcessSave,
@@ -150,7 +152,7 @@ export default class ProcessModel implements ProcessRepository {
     participantId: string,
     page: number,
     perPage: number
-  ): Promise<IProcessClientAndParticipantModel[]> {
+  ): Promise<IProcessClientAndParticipant[]> {
     const { rows } = await pool.query(
       `
       SELECT 
@@ -181,7 +183,10 @@ export default class ProcessModel implements ProcessRepository {
       [clientId, participantId, perPage, page]
     );
 
-    return rows;
+    let processList: IProcessClientAndParticipant[] =
+      this.groupProcessList(rows);
+
+    return processList;
   }
 
   private async filterAllByParticipantId(
@@ -219,7 +224,10 @@ export default class ProcessModel implements ProcessRepository {
       [participantId, perPage, page]
     );
 
-    return rows;
+    let processList: IProcessClientAndParticipant[] =
+      this.groupProcessList(rows);
+
+    return processList;
   }
 
   private async filterAllByClientId(
@@ -257,7 +265,10 @@ export default class ProcessModel implements ProcessRepository {
       [clientId, perPage, page]
     );
 
-    return rows;
+    let processList: IProcessClientAndParticipant[] =
+      this.groupProcessList(rows);
+
+    return processList;
   }
 
   private async filterAllProcess(page: number, perPage: number) {
@@ -290,7 +301,10 @@ export default class ProcessModel implements ProcessRepository {
       [perPage, page]
     );
 
-    return rows;
+    let processList: IProcessClientAndParticipant[] =
+      this.groupProcessList(rows);
+
+    return processList;
   }
 
   async listAll(query: {
@@ -299,7 +313,7 @@ export default class ProcessModel implements ProcessRepository {
     page: string;
     perPage: string;
   }): Promise<{ page: number; perPage: number; list: IProcess[] }> {
-    let list: IProcessClientAndParticipantModel[] = [];
+    let list: IProcessClientAndParticipant[] = [];
 
     const page = +query.page;
     const perPage = +query.perPage;
@@ -328,46 +342,70 @@ export default class ProcessModel implements ProcessRepository {
     return {
       page: page,
       perPage: perPage,
-      list: list.map((process) => this.formatListAllSchema(process)),
+      list,
     };
   }
 
-  private formatListAllSchema(
+  private groupProcessList(rows: any[]) {
+    let processList: IProcessClientAndParticipant[] = [];
+
+    rows.forEach((process) => {
+      const doesProcessWasAlreadyAdded = processList.find(
+        (item) => item.id === process.id
+      );
+
+      if (doesProcessWasAlreadyAdded) {
+        doesProcessWasAlreadyAdded.participantProcess?.push(
+          this.formatParticipantModel(process)
+        );
+      } else {
+        processList.push({
+          id: process.id,
+          number: process.number,
+          causeValue: process.cause_value,
+          type: process.type,
+          quoteDate: process.quote_date,
+          audienceDate: process.audience_date,
+          forum: process.forum,
+          city: process.city,
+          state: process.state,
+          clientId: process.client_id,
+          createdAt: process.created_at,
+          updatedAt: process.updated_at,
+          deletedAt: process.deleted_at,
+          client: this.formatClientModel(process),
+          participantProcess: [this.formatParticipantModel(process)],
+        });
+      }
+    });
+
+    return processList;
+  }
+
+  private formatParticipantModel(
     dto: IProcessClientAndParticipantModel
-  ): IProcessClientAndParticipant {
+  ): IParticipant {
     return {
-      id: dto.id,
-      audienceDate: dto.audience_date,
-      causeValue: dto.cause_value,
-      city: dto.city,
-      forum: dto.forum,
-      number: dto.number,
-      quoteDate: dto.quote_date,
-      state: dto.state,
-      type: dto.type,
-      clientId: dto.client_id,
-      createdAt: dto.created_at,
-      updatedAt: dto.updated_at,
-      deletedAt: dto.deleted_at,
-      client: {
-        id: dto.client_id,
-        cnpj: dto.client_cnpj,
-        name: dto.client_name,
-        createdAt: dto.client_created_at,
-        updatedAt: dto.client_updated_at,
-        deletedAt: dto.client_deleted_at,
-      },
-      participant: {
-        id: dto.participant_id,
-        document: dto.participant_document,
-        email: dto.participant_email,
-        name: dto.participant_full_name,
-        phone: dto.participant_phone,
-        type: dto.participant_type,
-        createdAt: dto.participant_created_at,
-        deletedAt: dto.participant_deleted_at,
-        updatedAt: dto.participant_updated_at,
-      },
+      id: dto.participant_id,
+      document: dto.participant_document,
+      email: dto.participant_email,
+      name: dto.participant_full_name,
+      phone: dto.participant_phone,
+      type: dto.participant_type,
+      createdAt: dto.participant_created_at,
+      deletedAt: dto.participant_deleted_at,
+      updatedAt: dto.participant_updated_at,
+    };
+  }
+
+  private formatClientModel(dto: IProcessClientAndParticipantModel): IClient {
+    return {
+      id: dto.client_id,
+      fullName: dto.client_name,
+      cnpj: dto.client_cnpj,
+      createdAt: dto.client_created_at,
+      updatedAt: dto.client_updated_at,
+      deletedAt: dto.client_deleted_at,
     };
   }
 
