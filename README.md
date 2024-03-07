@@ -1,6 +1,6 @@
-# Teste Técnico Backend Node.js - Desenvolvedor Júnior na Kor Solutions
+# Teste Técnico Backend Node.js
 
-Olá e seja bem-vindo ao teste técnico para a vaga de desenvolvedor backend junior na Kor Solutions!
+Olá e seja bem-vindo ao teste técnico para a vaga de desenvolvedor backend junior!
 
 ## Desafio
 
