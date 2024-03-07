@@ -7,7 +7,8 @@
     "dev": "ts-node-dev --inspect --transpile-only src/server.ts",
     "build": "npx tsc",
     "test:watch": "vitest watch",
-    "test": "vitest run"
+    "test": "vitest run",
+    "migrate": "node-pg-migrate"
   },
   "keywords": [],
   "author": "",

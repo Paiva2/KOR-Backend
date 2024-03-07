@@ -2,22 +2,26 @@ import pool from "../http/lib/pg";
 
 export default async function dbInit() {
   try {
-    const {
-      rows: [tablesAlreadyCrated],
-    } = await pool.query(`
-            SELECT EXISTS (
-              SELECT FROM pg_tables
-              WHERE schemaname = 'public'
-              AND tablename  = 'tb_clients'
-            );
-          `);
+    const { rows: processTypeResult } = await pool.query(
+      "SELECT 1 FROM pg_type WHERE typname = 'process_type'"
+    );
+    const { rows: participantTypeResult } = await pool.query(
+      "SELECT 1 FROM pg_type WHERE typname = 'participant_type'"
+    );
 
-    if (tablesAlreadyCrated.exists) return;
+    if (!processTypeResult.length) {
+      await pool.query(
+        `CREATE TYPE PROCESS_TYPE AS ENUM ('administrative', 'judicial')`
+      );
+    }
+
+    if (!participantTypeResult.length) {
+      await pool.query(
+        `CREATE TYPE PARTICIPANT_TYPE AS ENUM ('lawyer', 'defendant');`
+      );
+    }
 
     await pool.query(`
-            CREATE TYPE PROCESS_TYPE AS ENUM ('administrative', 'judicial');
-            CREATE TYPE PARTICIPANT_TYPE AS ENUM ('lawyer', 'defendant');
-
             CREATE TABLE IF NOT EXISTS tb_clients (
                 id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
                 full_name VARCHAR(50) NOT NULL, 
