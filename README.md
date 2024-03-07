@@ -42,33 +42,25 @@ Vou disponibilizar o .env para facilitar a utilização, por padrão a porta é 
 
 A doc da api está em: /docs/#/
 
-```
-bash
+### Inicializar projeto
 
-$ git clone https://github.com/Paiva2/KOR-Backend.git
+- $ git clone https://github.com/Paiva2/KOR-Backend.git
 
-$ cd ./
+- $ cd ./
 
-$ npm install
+- $ npm install
 
-$ docker compose up -d
+- $ docker compose up -d
 
-$ npm run dev
+- $ npm run dev
 
-```
+### Testes
 
-## To run unit tests
+- $ cd ./
 
-```
-bash
+- $ npm install
 
-$ cd ./
-
-$ npm install
-
-$ npm run test or npm run test:watch
-
-```
+- $ npm run test ou npm run test:watch
 
 ## Fluxo de funcionalidades
 
