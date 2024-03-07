@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { dtoHandler } from "../middlewares/DtoHandler";
-import { registerParticipant } from "../dtos/participantDto";
+import { registerParticipantDTO } from "../dtos/participantDto";
 import ParticipantController from "../controllers/participantController";
 
 export default function participantRoutes(app: Express) {
@@ -8,7 +8,9 @@ export default function participantRoutes(app: Express) {
 
   app.post(
     "/novo-participante",
-    [dtoHandler(registerParticipant)],
+    [dtoHandler(registerParticipantDTO)],
     participantController.registerParticipant
   );
+
+  app.get("/participantes", participantController.listAllParticipants);
 }

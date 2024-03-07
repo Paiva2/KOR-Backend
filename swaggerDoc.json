@@ -340,6 +340,36 @@
       }
     },
 
+    "/participantes": {
+      "get": {
+        "tags": ["Participante"],
+        "summary": "List all available participants",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtrado com sucesso."
+          }
+        }
+      }
+    },
+
     "/novo-participante": {
       "post": {
         "tags": ["Participante"],

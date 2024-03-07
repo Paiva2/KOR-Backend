@@ -1,4 +1,3 @@
-import { IParticipant, IParticipantModel } from "../../@types/participant";
 import type {
   IParticipantProcess,
   IParticipantProcessModel,

@@ -63,6 +63,32 @@ export default class ParticipantModel implements ParticipantRepository {
     return this.formatParticipantSchema(rows[0]);
   }
 
+  async listAllAvailable({
+    page,
+    perPage,
+  }: {
+    page: number;
+    perPage: number;
+  }): Promise<{ page: number; perPage: number; participants: IParticipant[] }> {
+    const { rows } = await pool.query(
+      `
+      SELECT * FROM tb_participants WHERE deleted_at IS NULL
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET ($1 - 1) * $2
+      ;    
+    `,
+      [page, perPage]
+    );
+
+    return {
+      page,
+      perPage,
+      participants: rows.map((participant) =>
+        this.formatParticipantSchema(participant)
+      ),
+    };
+  }
+
   private formatParticipantSchema(dto: IParticipantModel): IParticipant {
     return {
       id: dto.id,

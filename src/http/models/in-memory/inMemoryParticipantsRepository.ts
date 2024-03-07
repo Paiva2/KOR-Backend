@@ -49,4 +49,22 @@ export default class InMemoryParticipantsRepository
       this.participants.find((participant) => participant.id === dto) ?? null
     );
   }
+
+  public async listAllAvailable({
+    page,
+    perPage,
+  }: {
+    page: number;
+    perPage: number;
+  }): Promise<{ page: number; perPage: number; participants: IParticipant[] }> {
+    const list = this.participants.filter(
+      (participant) => participant.deletedAt === null
+    );
+
+    return {
+      page,
+      perPage,
+      participants: list.slice((page - 1) * perPage, perPage * page),
+    };
+  }
 }

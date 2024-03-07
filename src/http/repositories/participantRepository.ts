@@ -10,4 +10,10 @@ export default interface ParticipantRepository {
   }): Promise<IParticipant | null>;
 
   findById(dto: string): Promise<IParticipant | null>;
+
+  listAllAvailable(query: { page: number; perPage: number }): Promise<{
+    page: number;
+    perPage: number;
+    participants: IParticipant[];
+  }>;
 }
