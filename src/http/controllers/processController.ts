@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import ProcessFactory from "./factories/processFactory";
 import JwtService from "../services/jwt/jwtService";
+import { listAllProcessDTO } from "../dtos/processDtos";
+import z from "zod";
 
 export default class ProcessController {
   private factory = new ProcessFactory();
@@ -80,12 +82,11 @@ export default class ProcessController {
   };
 
   public listAllProcess = async (req: Request, res: Response) => {
-    const queries = req.query as {
-      page: string;
-      perPage: string;
-      cliente?: string;
-      participante?: string;
-    };
+    listAllProcessDTO.parse(req.query);
+
+    type queryType = z.infer<typeof listAllProcessDTO>;
+
+    const queries = req.query as queryType;
 
     const { filterProcessByParams } = await this.factory.exec();
 

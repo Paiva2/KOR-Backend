@@ -82,4 +82,6 @@ $ npm run test or npm run test:watch
 
 5 - Registrar um novo participante no sistema;
 
-6 - Inserir um dos participantes do sistema em um processo
+6 - Listar todos os participantes disponiveis no sistema;
+
+7 - Inserir um dos participantes do sistema em um processo.

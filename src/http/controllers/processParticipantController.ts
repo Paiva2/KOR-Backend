@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import ParticipantProcessFactory from "./factories/participantProcessFactory";
+import { filterProcessParticipantsByIdDTO } from "../dtos/participantProcessDto";
+import z from "zod";
 
 export default class ProcessParticipantController {
   private factory = new ParticipantProcessFactory();
@@ -19,10 +21,11 @@ export default class ProcessParticipantController {
   };
 
   public filterAllProcessParticipants = async (req: Request, res: Response) => {
-    const dto = req.query as {
-      page: string;
-      perPage: string;
-    };
+    filterProcessParticipantsByIdDTO.parse(req.query);
+
+    type queryType = z.infer<typeof filterProcessParticipantsByIdDTO>;
+
+    const dto = req.query as queryType;
 
     const { processId } = req.params;
 
