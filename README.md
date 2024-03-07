@@ -74,7 +74,7 @@ $ npm run test or npm run test:watch
 
 1 - Registrar um cliente;
 
-2 - Autenticar como um cliente;
+2 - Autenticar como um cliente (coloquei o CNPJ do cliente como chave para login);
 
 3 - Inserir o token de autenticação do cliente nos header de Authorization;
 
